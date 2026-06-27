@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PixoGraphy — تواصل معنا</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --orange: #E65C00;
+    --orange-light: #FFF3EC;
+    --black: #0D0D0D;
+    --dark: #1A1A1A;
+    --gray: #6B6B6B;
+    --border: #E8E8E8;
+    --bg: #FAFAFA;
+    --white: #FFFFFF;
+  }
+  body { font-family: 'IBM Plex Sans Arabic', sans-serif; background: var(--bg); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem 1rem; direction: rtl; }
+  .container { width: 100%; max-width: 480px; }
+  .brand { display: flex; align-items: center; gap: 8px; margin-bottom: 2.5rem; }
+  .brand-dot { width: 8px; height: 8px; background: var(--orange); border-radius: 50%; }
+  .brand-name { font-size: 13px; font-weight: 600; color: var(--orange); letter-spacing: 1.5px; text-transform: uppercase; }
+  .card { background: var(--white); border: 1px solid var(--border); border-radius: 20px; overflow: hidden; box-shadow: 0 2px 40px rgba(0,0,0,0.06); }
+  .card-top { background: var(--black); padding: 2rem 2rem 1.75rem; }
+  .card-label { font-size: 11px; font-weight: 500; color: var(--orange); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 10px; }
+  .card-title { font-size: 22px; font-weight: 500; color: var(--white); line-height: 1.45; margin-bottom: 8px; }
+  .card-sub { font-size: 14px; color: rgba(255,255,255,0.5); line-height: 1.6; }
+  .progress-wrap { padding: 1.5rem 2rem 0; }
+  .progress-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .progress-label { font-size: 12px; color: var(--gray); }
+  .progress-count { font-size: 12px; font-weight: 600; color: var(--orange); }
+  .progress-track { height: 3px; background: var(--border); border-radius: 99px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--orange); border-radius: 99px; transition: width 0.4s cubic-bezier(0.4,0,0.2,1); width: 0%; }
+  .steps-wrap { padding: 1.75rem 2rem 2rem; }
+  .step { display: none; }
+  .step.active { display: block; animation: fadeIn 0.25s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateX(-8px); } to { opacity: 1; transform: translateX(0); } }
+  .q-text { font-size: 17px; font-weight: 500; color: var(--black); margin-bottom: 1.25rem; line-height: 1.5; }
+  .options { display: flex; flex-direction: column; gap: 8px; }
+  .opt { display: flex; align-items: center; gap: 14px; padding: 14px 16px; border: 1.5px solid var(--border); border-radius: 12px; cursor: pointer; transition: all 0.18s ease; background: var(--white); text-align: right; user-select: none; }
+  .opt:hover { border-color: var(--orange); background: var(--orange-light); }
+  .opt.selected { border-color: var(--orange); background: var(--orange-light); }
+  .opt.selected .opt-check { background: var(--orange); border-color: var(--orange); }
+  .opt.selected .opt-check::after { opacity: 1; }
+  .opt-icon { font-size: 22px; flex-shrink: 0; line-height: 1; }
+  .opt-content { flex: 1; }
+  .opt-label { font-size: 15px; color: var(--black); font-weight: 400; }
+  .opt-desc { font-size: 12px; color: var(--gray); margin-top: 2px; }
+  .opt-check { width: 20px; height: 20px; border: 1.5px solid var(--border); border-radius: 50%; flex-shrink: 0; transition: all 0.18s; position: relative; }
+  .opt-check::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 8px; height: 8px; background: white; border-radius: 50%; opacity: 0; transition: opacity 0.18s; }
+  .nav { display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; gap: 10px; }
+  .btn-back { padding: 11px 20px; border: 1.5px solid var(--border); border-radius: 10px; background: transparent; color: var(--gray); font-size: 14px; font-family: 'IBM Plex Sans Arabic', sans-serif; cursor: pointer; transition: all 0.15s; }
+  .btn-back:hover { background: var(--bg); }
+  .btn-next { flex: 1; padding: 13px 24px; background: var(--orange); color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 500; font-family: 'IBM Plex Sans Arabic', sans-serif; cursor: pointer; transition: all 0.15s; }
+  .btn-next:hover { background: #CC5200; }
+  .btn-next:disabled { background: var(--border); color: var(--gray); cursor: not-allowed; }
+  .fields { display: flex; flex-direction: column; gap: 12px; }
+  .field-group { display: flex; flex-direction: column; gap: 6px; }
+  .field-label { font-size: 13px; font-weight: 500; color: var(--gray); }
+  .field-input { width: 100%; padding: 13px 16px; border: 1.5px solid var(--border); border-radius: 12px; font-size: 15px; font-family: 'IBM Plex Sans Arabic', sans-serif; color: var(--black); background: var(--white); outline: none; transition: border-color 0.18s; direction: rtl; }
+  .field-input:focus { border-color: var(--orange); }
+  .field-input::placeholder { color: #BBBBBB; }
+  .result { display: none; padding: 2rem; text-align: center; }
+  .result.show { display: block; animation: fadeIn 0.3s ease; }
+  .result-icon { font-size: 52px; margin-bottom: 1rem; line-height: 1; }
+  .result-title { font-size: 20px; font-weight: 600; color: var(--black); margin-bottom: 8px; }
+  .result-text { font-size: 14px; color: var(--gray); line-height: 1.7; margin-bottom: 1.5rem; }
+  .summary-card { background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.25rem; text-align: right; margin-bottom: 1.25rem; }
+  .summary-label { font-size: 11px; color: var(--gray); margin-bottom: 8px; font-weight: 500; letter-spacing: 0.5px; }
+  .summary-row { font-size: 14px; color: var(--dark); padding: 4px 0; line-height: 1.6; }
+  .summary-row span { color: var(--orange); font-weight: 500; }
+  .btn-wa { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 15px; background: #25D366; color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: 600; font-family: 'IBM Plex Sans Arabic', sans-serif; cursor: pointer; text-decoration: none; transition: background 0.15s; }
+  .btn-wa:hover { background: #1DAE57; }
+  .rej-text { font-size: 14px; color: var(--gray); line-height: 1.8; }
+  .footnote { text-align: center; font-size: 12px; color: var(--gray); margin-top: 1.25rem; line-height: 1.6; }
+  .track-badge { display: inline-block; font-size: 11px; font-weight: 600; padding: 4px 12px; border-radius: 99px; margin-bottom: 1rem; letter-spacing: 0.5px; }
+  .badge-fnb { background: #FFF0E6; color: #B84700; }
+  .badge-biz { background: #E6F1FB; color: #185FA5; }
+  .badge-personal { background: #EAF3DE; color: #3B6D11; }
+  .badge-event { background: #EEEDFE; color: #534AB7; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="brand">
+    <div class="brand-dot"></div>
+    <div class="brand-name">PixoGraphy</div>
+  </div>
+
+  <div class="card">
+    <div class="card-top">
+      <div class="card-label">تواصل معنا</div>
+      <div class="card-title">خلينا نشوف إذا منقدر نشتغل مع بعض</div>
+      <div class="card-sub">بضع خطوات بس — ما بياخد أكثر من دقيقتين</div>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-info">
+        <span class="progress-label">التقدم</span>
+        <span class="progress-count" id="prog-count">١ من ٤</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+    </div>
+
+    <div class="steps-wrap" id="form-area">
+
+      <!-- STEP 0 — Track selector -->
+      <div class="step active" id="s0">
+        <div class="q-text">شو نوع مشروعك أو احتياجك؟</div>
+        <div class="options">
+          <div class="opt" data-val="fnb"><span class="opt-icon">🍽️</span><div class="opt-content"><div class="opt-label">مطعم / كافيه / فود تراك</div><div class="opt-desc">F&B ومشاريع الأكل</div></div><div class="opt-check"></div></div>
+          <div class="opt" data-val="biz"><span class="opt-icon">🏢</span><div class="opt-content"><div class="opt-label">شركة أو عمل تجاري</div><div class="opt-desc">مقاولات، تصميم داخلي، طبي، تجاري</div></div><div class="opt-check"></div></div>
+          <div class="opt" data-val="personal"><span class="opt-icon">🎙️</span><div class="opt-content"><div class="opt-label">بيرسونال براندينغ / بودكاست</div><div class="opt-desc">محتوى شخصي، يوتيوب، إنستغرام</div></div><div class="opt-check"></div></div>
+          <div class="opt" data-val="event"><span class="opt-icon">🎬</span><div class="opt-content"><div class="opt-label">إيفنت أو حدث</div><div class="opt-desc">مؤتمر، حفل، لانش، إيفنت شركة</div></div><div class="opt-check"></div></div>
+        </div>
+        <div class="nav"><div></div><button class="btn-next" id="next0" disabled onclick="goNext(0)">التالي ←</button></div>
+      </div>
+
+      <!-- ===== F&B TRACK ===== -->
+      <div class="step" id="fnb-1">
+        <div class="track-badge badge-fnb">🍽️ مشاريع الأكل</div>
+        <div class="q-text">شو نوع المشروع؟</div>
+        <div class="options">
+          <div class="opt" data-val="مطعم"><span class="opt-icon">🍽️</span><div class="opt-content"><div class="opt-label">مطعم</div></div><div class="opt-check"></div></div>
+          <div class="opt" data-val="كافيه / كوفي شوب"><span class="opt-icon">☕</span><div class="opt-content"><div class="opt-label">كافيه / كوفي شوب</div></div><div class="opt-check"></div></div>
+          <div class="opt" data-val="فود تراك"><span class="opt-icon">🚚</span><div class="opt-content"><div class="opt-label">فود تراك</div></div><div class="opt-check"></div></div>
+          <div class="opt" data-val="كلاود كيتشن"><span class="opt-icon">📦</span><div class="opt-content"><div class="opt-label">كلاود كيتشن</div></div><div class="opt-check"></div></div>
+        </div>
+        <div class="nav"><button class="btn-back" onclick="goBack('fnb-1')">→ رجوع</button><button class="btn-next" id="fnb-next1" disabled onclick="goNext('fnb-1')">التالي ←</button></div>
+      </div>
+
+      <div class="step" id="fnb-2">
+        <div class="track-badge badge-fnb">🍽️ مشاريع الأكل</div>
+        <div class="q-text">وين وصل مشروعك هلق؟</div>
+        <div class="options">
+          <div class="opt" data-val="بالتخطيط والتجهيز"><span class="opt-icon">📋</span><div class="opt-content"><div class="opt-label">لسا بالتخطيط</div><div class="opt-desc">ما فتحنا بعد</div></div><div class="opt-check"></div></div>
+          <div class="opt" data-val="فتحنا مؤخراً — أقل من ٦ أشهر"><span class="opt-icon">🔑</span><div class="opt-content"><div class="opt-label">فتحنا مؤخراً</div><div class="opt-desc">أقل من ٦ أشهر</div></div><div class="opt-check"></div></div>
+          <div class="opt" data-val="شغالين وبدنا ننمو"><span class="opt-icon">📈</span><div class="opt-content"><div class="opt-label">شغالين وبدنا ننمو</div><div class="opt-desc">أكثر من ٦ أشهر</div></div><div class="opt-check"></div></div>
+        </div>
+        <div class="nav"><button class="btn-back" onclick="goBack('fnb-2')">→ رجوع</button><button class="btn-next" id="fnb-next2" disabled onclick="goNext('fnb-2')">التالي ←</button></div>
+      </div>
+
+      <div class="step" id="fnb-3">
+        <div class="track-badge badge-fnb">🍽️ مشاريع الأكل</div>
+        <div class="q-text">شو ميزانيتك الشهرية للتسويق؟</div>
+        <div class="options">
+          <div class="opt" data-val="low"><span class="opt-icon">💸</span><div class="opt-content"><div class="opt-label">أقل من ٥٥٠٠ درهم</div></div><div class="opt-check"></div></div>
+          <div class="opt" data-val="٥٥٠٠ — ١٠,٠٠٠ درهم"><span class="opt-icon">💰</span><div class="opt-content"><div class="opt-label">٥٥٠٠ — ١٠,٠٠٠ درهم</div></div><div class="opt-check"></div></div>
+          <div class="opt" data-val="أكثر من ١٠,٠٠٠ درهم"><span class="opt-icon">🏆</span><div class="opt-content"><div class="opt-label">أكثر من ١٠,٠٠٠ درهم</div></div><div class="opt-check"></div></div>
+        </div>
+        <div class="nav"><button class="btn-back" onclick="goBack('fnb-3')">→ رجوع</button><button class="btn-next" id="fnb-next3" disabled onclick="goNext('fnb-3')">التالي ←</button></div>
+      </div>
+
+      <!-- ===== BIZ TRACK ===== -->
+      <div class="step" id="biz-1">
+        <div class="track-badge badge-biz">🏢 شركات وأعمال</div>
+        <div class="q-text">شو قطاع شركتك؟</div>
+        <div class="options">
+          <div class="opt" data-val="مقاولات وبناء"><span class="opt-icon">🏗️</span><div class="opt-content"><div class="opt-label">مقاولات وبناء</div></div><div class="opt-check"></div></div>
+          <div class="opt" data-val="تصميم داخلي"><span class="opt-icon">🛋️</span><div class="opt-content"><div class="opt-label">تصميم داخلي</div></div><div class="opt-check"></div></div>
+          <div class="opt" data-val="مركز طبي / تجميل"><span class="opt-icon">🏥</span><div class="opt-content"><div class="opt-label">مركز طبي / تجميل</div></div><div class="opt-check"></div></div>
+          <div class="opt" data-val="تجاري عام"><span class="opt-icon">💼</span><div class="opt-content"><div class="opt-label">تجاري عام</div></div><div class="opt-check"></div></div>
+        </div>
+        <div class="nav"><button class="btn-back" onclick="goBack('biz-1')">→ رجوع</button><button class="btn-next" id="biz-next1" disabled onclick="goNext('biz-1')">التالي ←</button></div>
+      </div>
+
+      <div class="step" id="biz-2">
+        <div class="track-badge badge-biz">🏢 شركات وأعمال</div>
+        <div class="q-text">شو بتحتاج بالضبط؟</div>
+        <div class="options">
+          <div class="opt" data-val="تصوير منتجات أو مشاريع"><span class="opt-icon">📸</span><div class="opt-content"><div class="opt-label">تصوير منتجات أو مشاريع</div></div><div class="opt-check"></div></div>
+          <div class="opt" data-val="فيديو مؤسسي أو تعريفي"><span class="opt-icon">🎥</span><div class="opt-content"><div class="opt-label">فيديو مؤسسي / تعريفي</div></div><div class="opt-check"></div></div>
+          <div class="opt" data-val="محتوى سوشيال ميديا"><span class="opt-icon">📱</span><div class="opt-content"><div class="opt-label">محتوى سوشيال ميديا</div></div><div class="opt-check"></div></div>
+          <div class="opt" data-val="كل ما سبق"><span class="opt-icon">✨</span><div class="opt-content"><div class="opt-label">كل ما سبق</div></div><div class="opt-check"></div></div>
+        </div>
+        <div class="nav"><button class="btn-back" onclick="goBack('biz-2')">→ رجوع</button><button class="btn-next" id="biz-next2" disabled onclick="goNext('biz-2')">التالي ←</button></div>
+      </div>
+
+      <div class="step" id="biz-3">
+        <div class="track-badge badge-biz">🏢 شركات وأعمال</div>
+        <div class="q-text">شو ميزانيتك الشهرية؟</div>
+        <div class="options">
+          <div class="opt" data-val="low"><span class="opt-icon">💸</span><div class="opt-content"><div class="opt-label">أقل من ٥٥٠٠ درهم</div></div><div class="opt-check"></div></div>
+          <div class="opt" data-val="٥٥٠٠ — ١٠,٠٠٠ درهم"><span class="opt-icon">💰</span><div class="opt-content"><div class="opt-label">٥٥٠٠ — ١٠,٠٠٠ درهم</div></div><div class="opt-check"></div></div>
+          <div class="opt" data-val="أكثر من ١٠,٠٠٠ درهم"><span class="opt-icon">🏆</span><div class="opt-content"><div class="opt-label">أكثر من ١٠,٠٠٠ درهم</div></div><div class="opt-check"></div></div>
+        </div>
+        <div class="nav"><button class="btn-back" onclick="goBack('biz-3')">→ رجوع</button><button class="btn-next" id="biz-next3" disabled onclick="goNext('biz-3')">التالي ←</button></div>
+      </div>
+
+      <!-- ===== PERSONAL TRACK ===== -->
+      <div class="step" id="personal-1">
+        <div class="track-badge badge-personal">🎙️ بيرسونال براندينغ</div>
+        <div class="q-text">شو نوع المحتوى اللي بتبنيه؟</div>
+        <div class="options">
+          <div class="opt" data-val="بودكاست"><span class="opt-icon">🎙️</span><div class="opt-content"><div class="opt-label">بودكاست</div></div><div class="opt-check"></div></div>
+          <div class="opt" data-val="يوتيوب"><span class="opt-icon">▶️</span><div class="opt-content"><div class="opt-label">يوتيوب</div></div><div class="opt-check"></div></div>
+          <div class="opt" data-val="إنستغرام / تيك توك"><span class="opt-icon">📱</span><div class="opt-content"><div class="opt-label">إنستغرام / تيك توك</div></div><div class="opt-check"></div></div>
+          <div class="opt" data-val="سبيكر / مدرب"><span class="opt-icon">🎤</span><div class="opt-content"><div class="opt-label">سبيكر / مدرب</div></div><div class="opt-check"></div></div>
+        </div>
+        <div class="nav"><button class="btn-back" onclick="goBack('personal-1')">→ رجوع</button><button class="btn-next" id="personal-next1" disabled onclick="goNext('personal-1')">التالي ←</button></div>
+      </div>
+
+      <div class="step" id="personal-2">
+        <div class="track-badge badge-personal">🎙️ بيرسونال براندينغ</div>
+        <div class="q-text">شو بتحتاج؟</div>
+        <div class="options">
+          <div class="opt" data-val="تصوير جلسات وحلقات"><span class="opt-icon">🎥</span><div class="opt-content"><div class="opt-label">تصوير جلسات وحلقات</div></div><div class="opt-check"></div></div>
+          <div class="opt" data-val="موشن جرافيك وتصميم"><span class="opt-icon">✨</span><div class="opt-content"><div class="opt-label">موشن جرافيك وتصميم</div></div><div class="opt-check"></div></div>
+          <div class="opt" data-val="ثيم بصري كامل"><span class="opt-icon">🎨</span><div class="opt-content"><div class="opt-label">ثيم بصري كامل للقناة / الحساب</div></div><div class="opt-check"></div></div>
+          <div class="opt" data-val="كل ما سبق"><span class="opt-icon">💫</span><div class="opt-content"><div class="opt-label">كل ما سبق</div></div><div class="opt-check"></div></div>
+        </div>
+        <div class="nav"><button class="btn-back" onclick="goBack('personal-2')">→ رجوع</button><button class="btn-next" id="personal-next2" disabled onclick="goNext('personal-2')">التالي ←</button></div>
+      </div>
+
+      <div class="step" id="personal-3">
+        <div class="track-badge badge-personal">🎙️ بيرسونال براندينغ</div>
+        <div class="q-text">شو ميزانيتك الشهرية؟</div>
+        <div class="options">
+          <div class="opt" data-val="low"><span class="opt-icon">💸</span><div class="opt-content"><div class="opt-label">أقل من ٣٠٠٠ درهم</div></div><div class="opt-check"></div></div>
+          <div class="opt" data-val="٣٠٠٠ — ٦٠٠٠ درهم"><span class="opt-icon">💰</span><div class="opt-content"><div class="opt-label">٣٠٠٠ — ٦٠٠٠ درهم</div></div><div class="opt-check"></div></div>
+          <div class="opt" data-val="أكثر من ٦٠٠٠ درهم"><span class="opt-icon">🏆</span><div class="opt-content"><div class="opt-label">أكثر من ٦٠٠٠ درهم</div></div><div class="opt-check"></div></div>
+        </div>
+        <div class="nav"><button class="btn-back" onclick="goBack('personal-3')">→ رجوع</button><button class="btn-next" id="personal-next3" disabled onclick="goNext('personal-3')">التالي ←</button></div>
+      </div>
+
+      <!-- ===== EVENT TRACK ===== -->
+      <div class="step" id="event-1">
+        <div class="track-badge badge-event">🎬 إيفنتات</div>
+        <div class="q-text">شو نوع الإيفنت؟</div>
+        <div class="options">
+          <div class="opt" data-val="مؤتمر أو ملتقى"><span class="opt-icon">🎤</span><div class="opt-content"><div class="opt-label">مؤتمر أو ملتقى</div></div><div class="opt-check"></div></div>
+          <div class="opt" data-val="حفل أو سهرة"><span class="opt-icon">🎉</span><div class="opt-content"><div class="opt-label">حفل أو سهرة</div></div><div class="opt-check"></div></div>
+          <div class="opt" data-val="لانش منتج أو براند"><span class="opt-icon">🚀</span><div class="opt-content"><div class="opt-label">لانش منتج أو براند</div></div><div class="opt-check"></div></div>
+          <div class="opt" data-val="إيفنت شركة داخلي"><span class="opt-icon">🏢</span><div class="opt-content"><div class="opt-label">إيفنت شركة داخلي</div></div><div class="opt-check"></div></div>
+        </div>
+        <div class="nav"><button class="btn-back" onclick="goBack('event-1')">→ رجوع</button><button class="btn-next" id="event-next1" disabled onclick="goNext('event-1')">التالي ←</button></div>
+      </div>
+
+      <div class="step" id="event-2">
+        <div class="track-badge badge-event">🎬 إيفنتات</div>
+        <div class="q-text">كم عدد المدعوين تقريباً؟</div>
+        <div class="options">
+          <div class="opt" data-val="أقل من ٥٠ شخص"><span class="opt-icon">👥</span><div class="opt-content"><div class="opt-label">أقل من ٥٠ شخص</div></div><div class="opt-check"></div></div>
+          <div class="opt" data-val="٥٠ — ٢٠٠ شخص"><span class="opt-icon">👨‍👩‍👧‍👦</span><div class="opt-content"><div class="opt-label">٥٠ — ٢٠٠ شخص</div></div><div class="opt-check"></div></div>
+          <div class="opt" data-val="أكثر من ٢٠٠ شخص"><span class="opt-icon">🏟️</span><div class="opt-content"><div class="opt-label">أكثر من ٢٠٠ شخص</div></div><div class="opt-check"></div></div>
+        </div>
+        <div class="nav"><button class="btn-back" onclick="goBack('event-2')">→ رجوع</button><button class="btn-next" id="event-next2" disabled onclick="goNext('event-2')">التالي ←</button></div>
+      </div>
+
+      <div class="step" id="event-3">
+        <div class="track-badge badge-event">🎬 إيفنتات</div>
+        <div class="q-text">متى الإيفنت تقريباً؟</div>
+        <div class="options">
+          <div class="opt" data-val="خلال شهر"><span class="opt-icon">⚡</span><div class="opt-content"><div class="opt-label">خلال شهر</div><div class="opt-desc">عاجل</div></div><div class="opt-check"></div></div>
+          <div class="opt" data-val="خلال ١ — ٣ أشهر"><span class="opt-icon">📅</span><div class="opt-content"><div class="opt-label">خلال ١ — ٣ أشهر</div></div><div class="opt-check"></div></div>
+          <div class="opt" data-val="أكثر من ٣ أشهر"><span class="opt-icon">🗓️</span><div class="opt-content"><div class="opt-label">أكثر من ٣ أشهر</div></div><div class="opt-check"></div></div>
+        </div>
+        <div class="nav"><button class="btn-back" onclick="goBack('event-3')">→ رجوع</button><button class="btn-next" id="event-next3" disabled onclick="goNext('event-3')">التالي ←</button></div>
+      </div>
+
+      <!-- CONTACT STEP (shared) -->
+      <div class="step" id="contact">
+        <div class="q-text">أخر خطوة — بياناتك</div>
+        <div class="fields">
+          <div class="field-group"><label class="field-label">اسمك الكريم</label><input class="field-input" id="f-name" type="text" placeholder="محمد العبدالله" /></div>
+          <div class="field-group"><label class="field-label">رقم الهاتف / واتساب</label><input class="field-input" id="f-phone" type="tel" placeholder="+971 50 000 0000" /></div>
+          <div class="field-group"><label class="field-label">اسم المشروع أو الشركة</label><input class="field-input" id="f-project" type="text" placeholder="كافيه النخيل" /></div>
+          <div class="field-group"><label class="field-label">الموقع / المنطقة</label><input class="field-input" id="f-location" type="text" placeholder="أبوظبي — الشامخة، المريجة..." /></div>
+        </div>
+        <div class="nav"><button class="btn-back" onclick="goBack('contact')">→ رجوع</button><button class="btn-next" id="contact-next" onclick="submitForm()">إرسال ←</button></div>
+      </div>
+
+    </div>
+
+    <!-- Qualified -->
+    <div class="result" id="result-good">
+      <div class="result-icon">✅</div>
+      <div class="result-title">ممتاز — مشروعك يستاهل</div>
+      <div class="result-text">بناءً على إجاباتك، في إمكانية حقيقية نشتغل مع بعض.<br>اضغط الزر وبيوصلنا كل معلوماتك مباشرة.</div>
+      <div class="summary-card">
+        <div class="summary-label">ملخص طلبك</div>
+        <div id="summary-content"></div>
+      </div>
+      <a class="btn-wa" id="wa-link" href="#" target="_blank">📲 &nbsp; تواصل على واتساب</a>
+    </div>
+
+    <!-- Not Qualified -->
+    <div class="result" id="result-bad">
+      <div class="result-icon">🙏</div>
+      <div class="result-title">شكراً على اهتمامك</div>
+      <div class="rej-text">هلق ما منقدر نضمن النتيجة اللي تستاهلها بهالميزانية.<br><br>لما تكون جاهز أكثر — منكون هون.</div>
+    </div>
+
+  </div>
+  <div class="footnote">PixoGraphy Photography LLC · أبوظبي، الإمارات</div>
+</div>
+
+<script>
+(function() {
+  var track = '';
+  var answers = {};
+  var prevStep = '';
+
+  var totalSteps = { fnb: 4, biz: 4, personal: 4, event: 4 };
+
+  function setProgress(current, total) {
+    var pct = Math.round((current / total) * 100) + '%';
+    document.getElementById('progress-fill').style.width = pct;
+    document.getElementById('prog-count').textContent = current + ' من ' + total;
+  }
+
+  function showStep(id) {
+    document.querySelectorAll('.step').forEach(function(s) { s.classList.remove('active'); });
+    document.getElementById(id).classList.add('active');
+  }
+
+  function setupOpts(stepId, btnId, key) {
+    var step = document.getElementById(stepId);
+    if (!step) return;
+    var btn = document.getElementById(btnId);
+    step.querySelectorAll('.opt').forEach(function(opt) {
+      opt.addEventListener('click', function() {
+        step.querySelectorAll('.opt').forEach(function(o) { o.classList.remove('selected'); });
+        opt.classList.add('selected');
+        answers[key] = opt.getAttribute('data-val');
+        if (btn) btn.disabled = false;
+      });
+    });
+  }
+
+  // Setup all steps
+  setupOpts('s0', 'next0', 'track');
+  setupOpts('fnb-1', 'fnb-next1', 'type');
+  setupOpts('fnb-2', 'fnb-next2', 'status');
+  setupOpts('fnb-3', 'fnb-next3', 'budget');
+  setupOpts('biz-1', 'biz-next1', 'sector');
+  setupOpts('biz-2', 'biz-next2', 'need');
+  setupOpts('biz-3', 'biz-next3', 'budget');
+  setupOpts('personal-1', 'personal-next1', 'type');
+  setupOpts('personal-2', 'personal-next2', 'need');
+  setupOpts('personal-3', 'personal-next3', 'budget');
+  setupOpts('event-1', 'event-next1', 'type');
+  setupOpts('event-2', 'event-next2', 'size');
+  setupOpts('event-3', 'event-next3', 'timing');
+
+  window.goNext = function(step) {
+    if (step === 0) {
+      track = answers['track'];
+      showStep(track + '-1');
+      setProgress(2, 5);
+      prevStep = 's0';
+      return;
+    }
+
+    var s = step.toString();
+
+    if (s === 'fnb-1') { prevStep = 'fnb-1'; showStep('fnb-2'); setProgress(3, 5); }
+    else if (s === 'fnb-2') { prevStep = 'fnb-2'; showStep('fnb-3'); setProgress(4, 5); }
+    else if (s === 'fnb-3') {
+      if (answers['budget'] === 'low') { reject(); return; }
+      prevStep = 'fnb-3'; showStep('contact'); setProgress(5, 5);
+    }
+    else if (s === 'biz-1') { prevStep = 'biz-1'; showStep('biz-2'); setProgress(3, 5); }
+    else if (s === 'biz-2') { prevStep = 'biz-2'; showStep('biz-3'); setProgress(4, 5); }
+    else if (s === 'biz-3') {
+      if (answers['budget'] === 'low') { reject(); return; }
+      prevStep = 'biz-3'; showStep('contact'); setProgress(5, 5);
+    }
+    else if (s === 'personal-1') { prevStep = 'personal-1'; showStep('personal-2'); setProgress(3, 5); }
+    else if (s === 'personal-2') { prevStep = 'personal-2'; showStep('personal-3'); setProgress(4, 5); }
+    else if (s === 'personal-3') {
+      if (answers['budget'] === 'low') { reject(); return; }
+      prevStep = 'personal-3'; showStep('contact'); setProgress(5, 5);
+    }
+    else if (s === 'event-1') { prevStep = 'event-1'; showStep('event-2'); setProgress(3, 5); }
+    else if (s === 'event-2') { prevStep = 'event-2'; showStep('event-3'); setProgress(4, 5); }
+    else if (s === 'event-3') { prevStep = 'event-3'; showStep('contact'); setProgress(5, 5); }
+  };
+
+  window.goBack = function(step) {
+    var s = step.toString();
+    if (s === track + '-1') { showStep('s0'); setProgress(1, 5); }
+    else if (s === 'fnb-2') { showStep('fnb-1'); setProgress(2, 5); }
+    else if (s === 'fnb-3') { showStep('fnb-2'); setProgress(3, 5); }
+    else if (s === 'biz-2') { showStep('biz-1'); setProgress(2, 5); }
+    else if (s === 'biz-3') { showStep('biz-2'); setProgress(3, 5); }
+    else if (s === 'personal-2') { showStep('personal-1'); setProgress(2, 5); }
+    else if (s === 'personal-3') { showStep('personal-2'); setProgress(3, 5); }
+    else if (s === 'event-2') { showStep('event-1'); setProgress(2, 5); }
+    else if (s === 'event-3') { showStep('event-2'); setProgress(3, 5); }
+    else if (s === 'contact') { showStep(prevStep); setProgress(4, 5); }
+  };
+
+  function reject() {
+    document.getElementById('form-area').style.display = 'none';
+    document.getElementById('result-bad').classList.add('show');
+    document.getElementById('progress-fill').style.width = '100%';
+  }
+
+  var trackLabels = { fnb: 'مشاريع الأكل 🍽️', biz: 'شركات وأعمال 🏢', personal: 'بيرسونال براندينغ 🎙️', event: 'إيفنتات 🎬' };
+
+  window.submitForm = function() {
+    var name = document.getElementById('f-name').value.trim();
+    var phone = document.getElementById('f-phone').value.trim();
+    var project = document.getElementById('f-project').value.trim();
+    var location = document.getElementById('f-location').value.trim();
+
+    var valid = true;
+    ['f-name','f-phone','f-project','f-location'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (!el.value.trim()) { el.style.borderColor = '#E65C00'; valid = false; }
+    });
+    if (!valid) return;
+
+    document.getElementById('form-area').style.display = 'none';
+    document.getElementById('progress-fill').style.width = '100%';
+
+    // Build summary
+    var rows = [
+      { label: 'الاسم', val: name },
+      { label: 'الهاتف', val: phone },
+      { label: 'المشروع', val: project },
+      { label: 'الموقع', val: location },
+      { label: 'القطاع', val: trackLabels[track] },
+    ];
+
+    if (answers['type']) rows.push({ label: 'النوع', val: answers['type'] });
+    if (answers['sector']) rows.push({ label: 'القطاع', val: answers['sector'] });
+    if (answers['status']) rows.push({ label: 'الوضع', val: answers['status'] });
+    if (answers['need']) rows.push({ label: 'الاحتياج', val: answers['need'] });
+    if (answers['size']) rows.push({ label: 'الحجم', val: answers['size'] });
+    if (answers['timing']) rows.push({ label: 'التوقيت', val: answers['timing'] });
+    if (answers['budget']) rows.push({ label: 'الميزانية', val: answers['budget'] + '/شهر' });
+
+    var summaryHTML = rows.map(function(r) {
+      return '<div class="summary-row">' + r.label + ': <span>' + r.val + '</span></div>';
+    }).join('');
+    document.getElementById('summary-content').innerHTML = summaryHTML;
+
+    // WhatsApp message
+    var msg = 'مرحبا أمير،\n\nشفت إعلانك وعبيت الفورم:\n\n';
+    msg += '👤 الاسم: ' + name + '\n';
+    msg += '📞 الهاتف: ' + phone + '\n';
+    msg += '🏪 المشروع: ' + project + '\n';
+    msg += '📍 الموقع: ' + location + '\n';
+    msg += '━━━━━━━━━━\n';
+    msg += '📂 القطاع: ' + trackLabels[track] + '\n';
+    if (answers['type']) msg += '📋 النوع: ' + answers['type'] + '\n';
+    if (answers['sector']) msg += '🏢 القطاع: ' + answers['sector'] + '\n';
+    if (answers['status']) msg += '📊 الوضع: ' + answers['status'] + '\n';
+    if (answers['need']) msg += '🎯 الاحتياج: ' + answers['need'] + '\n';
+    if (answers['size']) msg += '👥 الحجم: ' + answers['size'] + '\n';
+    if (answers['timing']) msg += '🗓️ التوقيت: ' + answers['timing'] + '\n';
+    if (answers['budget']) msg += '💰 الميزانية: ' + answers['budget'] + '/شهر\n';
+    msg += '\nبدي أعرف أكثر عن خدماتكم.';
+
+    document.getElementById('wa-link').href = 'https://wa.me/971563411002?text=' + encodeURIComponent(msg);
+    document.getElementById('result-good').classList.add('show');
+  };
+
+  document.querySelectorAll('.field-input').forEach(function(el) {
+    el.addEventListener('focus', function() { el.style.borderColor = ''; });
+  });
+
+  // Init progress
+  setProgress(1, 5);
+})();
+</script>
+</body>
+</html>
